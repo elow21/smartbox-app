@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "669013661481",
+    "project_id": "project-smartbox",
+    "storage_bucket": "project-smartbox.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:669013661481:android:2f7db7dc49403a63ea4938",
+        "android_client_info": {
+          "package_name": "com.example.smartbox_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "669013661481-5oc2lb2m2egtsfii2i36aii3qdepdhrd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj12zy5A_ZBEXOL547UkgWKj9AOvk4hVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "669013661481-5oc2lb2m2egtsfii2i36aii3qdepdhrd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
