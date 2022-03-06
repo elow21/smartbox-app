@@ -1,1 +1,1 @@
-# smartbox-app
+# Project SmartBox Android Application
