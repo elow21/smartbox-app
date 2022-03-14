@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/ducky/AndroidStudioProjects/smartboxapp/app/src/main/res/layout/activity_main.xml" value="0.33559782608695654" />
+        <entry key="..\:/Users/ducky/AndroidStudioProjects/smartboxapp/app/src/main/res/layout/activity_signin.xml" value="0.1" />
+        <entry key="..\:/Users/ducky/AndroidStudioProjects/smartboxapp/app/src/main/res/layout/fragment_dashboard.xml" value="0.262037037037037" />
         <entry key="..\:/Users/ducky/AndroidStudioProjects/smartboxapp/app/src/main/res/layout/fragment_home.xml" value="0.33559782608695654" />
       </map>
     </option>
