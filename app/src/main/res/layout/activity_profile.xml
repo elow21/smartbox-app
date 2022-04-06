@@ -14,26 +14,24 @@
         android:text="Profile"
         android:textSize="50sp"
         android:textStyle="bold"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"/>
 
     <TextView
         android:id="@+id/email_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30dp"
+        android:textSize="18dp"
         android:layout_centerInParent="true"
         android:layout_below="@+id/profile_text"
         />
 
     <Button
         android:id="@+id/btnlogout"
-        android:layout_width="135dp"
-        android:layout_height="49dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/bottom_navigation"
-        android:layout_below="@+id/email_text"
         android:layout_centerInParent="true"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="60dp"
         android:text="Log Out" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

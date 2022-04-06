@@ -48,23 +48,32 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     private void login() {
+        //initialise the input fields for email and password
         String user = email.getText().toString().trim();
         String pass = password.getText().toString().trim();
+        //if either fields are empty, an error message will be shown
         if(user.isEmpty()){
             email.setError("Email field can not be empty!");
         }
         if(pass.isEmpty()){
             password.setError("Password field can not be empty!");
         }
+        //if both fields are valid start authentication with firebase
         else{
+            //use the email and password from the input field to sign in with firebase authentication
             mAuth.signInWithEmailAndPassword(user,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
+                    //if user sign in is successful
                     if(task.isSuccessful()){
+                        //A pop up message will be shown
                         Toast.makeText(LoginActivity.this, "Login Successful! ", Toast.LENGTH_SHORT).show();
+                        //Direct users to their dashboard
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     }
+                    //if user sign in failed
                     else{
+                        //A pop up message will be shown with the relevant error code or message
                         Toast.makeText(LoginActivity.this, "Login Failed. " + task.getException().getMessage(),Toast.LENGTH_SHORT).show();
                     }
                 }

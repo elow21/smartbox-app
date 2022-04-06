@@ -53,24 +53,33 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void Register() {
+        //initialises input fields as email and password
         String user = email.getText().toString().trim();
         String pass = password.getText().toString().trim();
-
+        //if either input fields are empty, an error message will be shown
         if(user.isEmpty()){
             email.setError("Email field can not be empty! ");
         }
         if(pass.isEmpty()){
             password.setError("Password field can not be empty! ");
         }
+        //if both input fields are filled in, create a new user
         else{
+            //mAuth utilises firebase authentication to create a new user entry
             mAuth.createUserWithEmailAndPassword(user,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                //once a new user entry has been created on firebase, display the results
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
+                    //if a new user entry is created successfully
                     if(task.isSuccessful()){
+                        //A pop up message will be shown
                         Toast.makeText(RegisterActivity.this, "Signed Up successfully. ", Toast.LENGTH_SHORT).show();
+                        //Direct users to the dashboard page
                         startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                     }
+                    //if creating a new user entry is unsuccessful
                     else{
+                        //A pop up message will be shown with the relevant error code or message
                         Toast.makeText(RegisterActivity.this, "Sign up failed. Please try again. "+task.getException().getMessage(),Toast.LENGTH_SHORT).show();
                     }
                 }

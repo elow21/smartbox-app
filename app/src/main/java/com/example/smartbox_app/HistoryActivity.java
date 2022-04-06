@@ -84,22 +84,33 @@ public class HistoryActivity extends AppCompatActivity {
         //get database
         db = FirebaseFirestore.getInstance();
 
+        //Select "Deliveries" database from our firestore database
         db.collection("Deliveries")
-                .orderBy("id", Query.Direction.DESCENDING) //latest delivery is shown at the top
+                //order the entries with the field "id" by descending
+                //latest deliveries will be shown at the top of the list
+                .orderBy("id", Query.Direction.DESCENDING)
+                //returns the value that adhere to criteria above
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        //creates an array for the list "mDeliveryList"
                         List<Delivery> mDeliveryList = new ArrayList<>();
+                        //if values were returned from the database successfully
                         if (task.isSuccessful()){
                             for (QueryDocumentSnapshot document: task.getResult()){
+                                //initialise entries to the "Delivery" class
                                 Delivery del = document.toObject(Delivery.class);
+                                //add entries to the previously created array
                                 mDeliveryList.add(del);
                             }
+                            //The adapter converts array list "mDeliveryAdapter" into list view items assigned for the History page
                             DeliveryAdapter mDeliveryAdapter = new DeliveryAdapter(HistoryActivity.this, mDeliveryList);
+                            //When any of the data changes, this will notify the "mDeliveryAdapter" to reflect the changes
                             mDeliveryAdapter.notifyDataSetChanged();
+                            //Associates our list view "deliveryList" with the array list "mDeliveryAdapter"
+                            //The list view "deliveryList" will show the values from our database on the History page
                             deliveryList.setAdapter(mDeliveryAdapter);
-
                         }
                     }
                 });
