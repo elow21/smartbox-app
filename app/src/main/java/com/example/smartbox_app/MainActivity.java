@@ -49,10 +49,11 @@ public class MainActivity extends AppCompatActivity {
                 // Get new FCM registration token
                 String token = task.getResult();
                 sendRegistrationToServer(token);
-                // Log token to console
-                System.out.println(token);
             }
         });
+
+        //subscribe to push notif cluoud function
+        FirebaseMessaging.getInstance().subscribeToTopic("PushNotifications");
 
         //barchart call
         loadBarChartData();

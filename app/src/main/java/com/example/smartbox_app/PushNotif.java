@@ -23,19 +23,24 @@ public class PushNotif extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
+
         super.onMessageReceived(message);
         System.out.println("From "+ message.getFrom());
+        String notifTitle = message.getNotification().getTitle();
+        String notifBody = message.getNotification().getBody();
+
         // Check if message contains a notification payload.
         if (message.getNotification() != null) {
-            System.out.println("Message Notification Body: " + message.getNotification().getBody());
+            notifTitle = message.getNotification().getTitle();
+            notifBody = message.getNotification().getBody();
         }
 
-        sendNotification(message.getNotification().getBody());
+        sendNotification(notifTitle, notifBody);
 
     }
 
     //push notification info
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String notifTitle, String notifBody) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -46,8 +51,8 @@ public class PushNotif extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_stat_notif)
-                        .setContentTitle("You have a new delivery!")
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody))
+                        .setContentTitle(notifTitle)
+                        .setContentText(notifBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
