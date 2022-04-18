@@ -23,18 +23,17 @@ public class DeliveryAdapter extends ArrayAdapter<Delivery> {
             convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_delivery, parent, false);
         }
 
-        //Delivery dir = getItem(position);
 
-        //TextView timestampTextView = (TextView) convertView.findViewById(R.id.delivery_timestamp);
         TextView DateTimeTextView = (TextView) convertView.findViewById(R.id.delivery_dt);
+        TextView nameTextView = (TextView) convertView.findViewById(R.id.delivery_name);
         TextView tracknoTextView = (TextView) convertView.findViewById(R.id.delivery_trackno);
         TextView typeTextView = (TextView) convertView.findViewById(R.id.delivery_type);
         TextView weightTextView = (TextView) convertView.findViewById(R.id.delivery_weight);
 
         Delivery delivery = getItem(position);
 
-        //timestampTextView.setText(String.valueOf(delivery.getTimestamp()));
         DateTimeTextView.setText(delivery.getDate_Time());
+        nameTextView.setText(delivery.getName());
         tracknoTextView.setText(delivery.getTrackno());
         typeTextView.setText(delivery.getType());
         weightTextView.setText(delivery.getWeight());

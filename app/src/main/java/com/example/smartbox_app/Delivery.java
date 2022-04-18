@@ -6,18 +6,20 @@ public class Delivery {
     private String trackno;
     private String type;
     private String weight;
+    private String name;
     private int id; //used for desc order
 
     public Delivery(){
         //leave blank for firebase
     }
 
-    public Delivery(String Date_Time, String trackno, String type, String weight, int id){
+    public Delivery(String Date_Time, String trackno, String type, String weight, int id, String name){
         this.Date_Time = Date_Time;
         this.trackno = trackno;
         this.type = type;
         this.weight = weight;
         this.id = id;
+        this.name = name;
     }
 
     //getter and setter
@@ -33,6 +35,7 @@ public class Delivery {
     public String getWeight(){
         return "Weight: " + weight;
     }
+    public String getName(){return "Courier: " + name;}
     public int getId(){
         return id;
     }
@@ -49,6 +52,10 @@ public class Delivery {
     public void setWeight(String weight){
         this.weight = weight;
     }
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setId(int id){
         this.id = id;
     }
