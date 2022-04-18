@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //subscribe to push notif cluoud function
+        //Subscribe to specific topic from created the cloud function
         FirebaseMessaging.getInstance().subscribeToTopic("PushNotifications");
 
         //barchart call

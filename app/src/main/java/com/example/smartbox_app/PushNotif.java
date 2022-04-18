@@ -12,6 +12,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.google.api.ResourceDescriptor;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -39,22 +40,30 @@ public class PushNotif extends FirebaseMessagingService {
 
     }
 
-    //push notification info
+    //Send push notification to user device
     private void sendNotification(String notifTitle, String notifBody) {
-        Intent intent = new Intent(this, MainActivity.class);
+        //Directs users to delivery history page
+        Intent intent = new Intent(this, HistoryActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
-
-        String channelId = "My channel ID";
+        //Creates the notification channel ID
+        String channelId = "SmartBox App channel ID";
+        //Get the user's default notification ringtone
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        //Creates the layout for our notification
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
+                        //Notification icon is set to SmartBox app logo
                         .setSmallIcon(R.drawable.ic_stat_notif)
+                        //Notification title and body will be obtained from the payload received
                         .setContentTitle(notifTitle)
                         .setContentText(notifBody)
+                        //Notification will be removed once users click on it
                         .setAutoCancel(true)
+                        //Set our notification ringtone as device default
                         .setSound(defaultSoundUri)
+                        //Directs users to the SmartBox app once the notification is clicked
                         .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
