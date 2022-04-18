@@ -7,10 +7,19 @@
     tools:context=".RegisterActivity"
     android:layout_margin="10dp">
 
+    <ImageView
+        android:id="@+id/signuplogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/logo"
+        />
+
     <TextView
         android:id="@+id/txt_signup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/signuplogo"
         android:text="Sign Up as a new user"
         android:textSize="20dp"
         android:layout_marginBottom="20dp"

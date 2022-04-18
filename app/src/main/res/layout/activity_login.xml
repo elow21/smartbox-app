@@ -7,10 +7,18 @@
     tools:context=".LoginActivity"
     android:layout_margin="10dp">
 
+    <ImageView
+        android:id="@+id/loginlogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/logo" />
+
     <TextView
         android:id="@+id/txt_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/loginlogo"
         android:text="Log In to your existing account"
         android:textSize="20dp"
         android:layout_marginBottom="20dp"
