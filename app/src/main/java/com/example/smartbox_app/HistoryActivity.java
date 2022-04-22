@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -40,12 +41,24 @@ public class HistoryActivity extends AppCompatActivity {
     private DeliveryAdapter mDeliveryAdapter;
     private ArrayList<Delivery> mDeliveryList;
     private static final String TAG ="HistoryActivity";
+    private SwipeRefreshLayout refreshLayout;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+        refreshLayout = findViewById(R.id.swiperefresh);
+
+        //refresh
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                onStart();
+                refreshLayout.setRefreshing(false);
+                Toast.makeText(HistoryActivity.this, "Delivery Updated", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         //bottom nav
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
