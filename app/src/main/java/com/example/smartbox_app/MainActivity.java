@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,22 +23,45 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG ="MainActivity";
     private FirebaseAuth mAuth;
-    private BarChart barChart;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    ArrayList barArrayList;
+    BarChart barChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        barChart = findViewById(R.id.barchart);
         mAuth = FirebaseAuth.getInstance();
+        barChart = findViewById(R.id.barchart);
+        getDatafromFirestore();
+
+        loadBarChartData();
+        BarDataSet barDataSet = new BarDataSet(barArrayList, "Deliveries");
+        BarData barData = new BarData(barDataSet);
+        barChart.setData(barData);
+        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        barDataSet.setValueTextColor(Color.GRAY);
+        barDataSet.setValueTextSize(12f);
+        barChart.getDescription().setEnabled(false);
+
 
         //get device token for cloud messaging service
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
@@ -55,8 +80,6 @@ public class MainActivity extends AppCompatActivity {
         //Subscribe to specific topic from created the cloud function
         FirebaseMessaging.getInstance().subscribeToTopic("PushNotifications");
 
-        //barchart call
-        loadBarChartData();
         //bottom nav
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         Menu menu = bottomNavigationView.getMenu();
@@ -93,35 +116,51 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //barchart data load
-    private void loadBarChartData(){
-        ArrayList<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0f, 2f));
-        entries.add(new BarEntry(1f, 3f));
-        entries.add(new BarEntry(2f, 4f));
-        entries.add(new BarEntry(3f, 1f));
-
-        ArrayList<Integer> colors = new ArrayList<>();
-        for(int color: ColorTemplate.MATERIAL_COLORS){
-            colors.add(color);
-        }
-
-        for (int color: ColorTemplate.VORDIPLOM_COLORS){
-            colors.add(color);
-        }
-
-        BarDataSet set = new BarDataSet(entries, "Deliveries");
-        set.setColors(colors);
-        BarData data = new BarData(set);
-        data.setBarWidth(0.9f); // set custom bar width
-        barChart.setData(data);
-        barChart.setFitBars(true); // make the x-axis fit exactly all bars
-        barChart.invalidate(); // refresh
-    }
 
     //send token to Firebase server
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
+    }
+    /*get data value from database test
+            chartdata.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for (QueryDocumentSnapshot document : task.getResult()){
+                            String value = document.getData().get("value").toString();
+                            barArrayList = new ArrayList();
+                            barArrayList.add(new BarEntry(2f, Float.parseFloat(value)));
+                            Log.d(TAG, document.getId() + " => " + value);
+                        }
+                    }
+                }
+            });*/
+
+    //TODO: barchart setup
+    private void loadBarChartData(){
+        barArrayList = new ArrayList();
+        barArrayList.add(new BarEntry(2f, 10));
+        barArrayList.add(new BarEntry(3f, 20));
+        barArrayList.add(new BarEntry(4f, 30));
+        barArrayList.add(new BarEntry(5f, 40));
+        barArrayList.add(new BarEntry(6f, 20));
+        //barArrayList.add(new BarEntry(2f, Float.parseFloat(value)));
+    }
+
+    private void getDatafromFirestore(){
+        db.collection("ChartData")
+                .orderBy("id", Query.Direction.ASCENDING)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    for (QueryDocumentSnapshot document : task.getResult()){
+                        String value = document.getData().get("value").toString();
+                        Log.d(TAG, document.getId() + " => " + value);
+                    }
+                }
+            }
+        });
     }
 
 

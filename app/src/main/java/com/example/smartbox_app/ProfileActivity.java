@@ -36,6 +36,8 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        //reset password function
+
         //bottom nav
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         Menu menu = bottomNavigationView.getMenu();
@@ -78,4 +80,7 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
         startActivity(new Intent(ProfileActivity.this, LoginActivity.class));
     }
+
+
+
 }
