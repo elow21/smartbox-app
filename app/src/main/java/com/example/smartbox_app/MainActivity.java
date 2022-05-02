@@ -141,23 +141,28 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         //Creates an array which will store values from each document
                         List<String> valueList = new ArrayList<>();
+                        //if values were return successfully from database
                         if(task.isSuccessful()) {
+                            //Loops until every document snapshot has been read
                             for (QueryDocumentSnapshot document : task.getResult()) {
+                                //Gets the value from "value" field in our database
                                 String value = document.getData().get("value").toString();
+                                //Adds the data obtained into the valueList array
                                 valueList.add(value);
                             }
-
                             //Creates an the "entries" array which will store chart data
                             ArrayList<BarEntry> entries = new ArrayList<>();
-
                             //Loops until the latest 5 entries are added to the barchart
                             for (int i = 0; i < 5; i++){
+                                //Add bar entries from index 0-4, with their respective value from valueList
                                 entries.add(new BarEntry(i, Float.parseFloat(valueList.get(i))));
                             }
                                 //sets the "entries" array as the dataset to be used for our barchart
                                 BarDataSet barDataSet = new BarDataSet(entries, "Daily deliveries");
                                 BarData data = new BarData(barDataSet);
                                 mybarchart.setData(data);
+
+                                //Bar Chart configurations for legends,axis,and colours
                                 barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
                                 barDataSet.setValueTextSize(12f);
                                 mybarchart.getDescription().setEnabled(false);
