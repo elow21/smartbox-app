@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private TextView timestamp;
     private TextView todayview;
-    private BarChart barChart;
+    BarChart mybarchart;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BarChart barchart = findViewById(R.id.barchart);
+        BarChart mybarchart = findViewById(R.id.barchart);
         timestamp = findViewById(R.id.timestamp);
         todayview = findViewById(R.id.todayview);
         mAuth = FirebaseAuth.getInstance();
@@ -96,43 +96,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        //get chart data from firestore
-        db.collection("ChartData")
-                .orderBy("id", Query.Direction.ASCENDING)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        List<String> valueList = new ArrayList<>();
-                        if(task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String value = document.getData().get("value").toString();
-                                valueList.add(value);
-                            }
-
-                            ArrayList<BarEntry> entries = new ArrayList<>();
-                            for (int i = 0; i < 5; i++){
-                                entries.add(new BarEntry(i, Float.parseFloat(valueList.get(i))));
-                            }
-
-                            BarDataSet barDataSet = new BarDataSet(entries, "Daily deliveries");
-                            BarData data = new BarData(barDataSet);
-                            barchart.setData(data);
-                            barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-                            barDataSet.setValueTextSize(12f);
-                            barchart.getDescription().setEnabled(false);
-                            barchart.getXAxis().setEnabled(false);
-                            barchart.getXAxis().setDrawGridLines(false);
-                            barchart.getAxisLeft().setDrawGridLines(false);
-                            barchart.getAxisRight().setEnabled(false);
-                            barchart.getAxisRight().setDrawGridLines(false);
-                            barchart.getLegend().setEnabled(false);
-                        }
-                    }
-                });
-
-
-
         //bottom nav
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         Menu menu = bottomNavigationView.getMenu();
@@ -163,10 +126,53 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart(){
         super.onStart();
+        BarChart mybarchart = findViewById(R.id.barchart);
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser==null){
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         }
+
+        //get chart data from firestore database
+        db.collection("ChartData")
+                .orderBy("id", Query.Direction.ASCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        //Creates an array which will store values from each document
+                        List<String> valueList = new ArrayList<>();
+                        if(task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String value = document.getData().get("value").toString();
+                                valueList.add(value);
+                            }
+
+                            //Creates an the "entries" array which will store chart data
+                            ArrayList<BarEntry> entries = new ArrayList<>();
+
+                            //Loops until the latest 5 entries are added to the barchart
+                            for (int i = 0; i < 5; i++){
+                                entries.add(new BarEntry(i, Float.parseFloat(valueList.get(i))));
+                            }
+                                //sets the "entries" array as the dataset to be used for our barchart
+                                BarDataSet barDataSet = new BarDataSet(entries, "Daily deliveries");
+                                BarData data = new BarData(barDataSet);
+                                mybarchart.setData(data);
+                                barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                                barDataSet.setValueTextSize(12f);
+                                mybarchart.getDescription().setEnabled(false);
+                                mybarchart.getXAxis().setEnabled(false);
+                                mybarchart.getXAxis().setDrawGridLines(false);
+                                mybarchart.getAxisLeft().setDrawGridLines(false);
+                                mybarchart.getAxisRight().setEnabled(false);
+                                mybarchart.getAxisRight().setDrawGridLines(false);
+                                mybarchart.getLegend().setEnabled(false);
+                        }
+                        //enables the barchart to automatically generate on start
+                        mybarchart.invalidate();
+                        mybarchart.refreshDrawableState();
+                    }
+                });
     }
 
 
