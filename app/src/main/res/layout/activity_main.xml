@@ -18,6 +18,16 @@
         android:textSize="50sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timestamp"
+        android:textSize="12sp"
+        android:layout_below="@+id/dash_text"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/card1"
         android:layout_width="match_parent"
@@ -32,13 +42,12 @@
         >
 
         <TextView
+            android:id="@+id/todayview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
-            android:textColor="@color/black"
-            android:text="You have 2 new deliveries."
             android:textSize="16dp"
             android:textStyle="bold" />
     </androidx.cardview.widget.CardView>
@@ -56,6 +65,13 @@
         android:layout_below="@+id/card1"
         android:layout_above="@+id/bottom_navigation"
         >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Daily Deliveries"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            />
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/barchart"

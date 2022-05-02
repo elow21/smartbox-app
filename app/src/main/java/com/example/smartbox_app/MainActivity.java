@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextClock;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -23,45 +25,40 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.w3c.dom.Text;
+
+import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
+import java.util.RandomAccess;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG ="MainActivity";
     private FirebaseAuth mAuth;
+    private TextView timestamp;
+    private TextView todayview;
+    private BarChart barChart;
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    ArrayList barArrayList;
-    BarChart barChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        BarChart barchart = findViewById(R.id.barchart);
+        timestamp = findViewById(R.id.timestamp);
+        todayview = findViewById(R.id.todayview);
         mAuth = FirebaseAuth.getInstance();
-        barChart = findViewById(R.id.barchart);
-        getDatafromFirestore();
-
-        loadBarChartData();
-        BarDataSet barDataSet = new BarDataSet(barArrayList, "Deliveries");
-        BarData barData = new BarData(barDataSet);
-        barChart.setData(barData);
-        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        barDataSet.setValueTextColor(Color.GRAY);
-        barDataSet.setValueTextSize(12f);
-        barChart.getDescription().setEnabled(false);
-
 
         //get device token for cloud messaging service
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
@@ -73,12 +70,68 @@ public class MainActivity extends AppCompatActivity {
                 }
                 // Get new FCM registration token
                 String token = task.getResult();
-                sendRegistrationToServer(token);
             }
         });
 
         //Subscribe to specific topic from created the cloud function
         FirebaseMessaging.getInstance().subscribeToTopic("PushNotifications");
+
+        //Show date and time
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String currentDateandTime = sdf.format(new Date());
+        timestamp.setText("Current time is " + currentDateandTime);
+
+        //show deliveries today
+        db.collection("TodayView")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String amount = document.getData().get("value").toString();
+                                todayview.setText("You have " + amount + " deliveries today!");
+                            }
+                        }
+                    }
+                });
+
+        //get chart data from firestore
+        db.collection("ChartData")
+                .orderBy("id", Query.Direction.ASCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        List<String> valueList = new ArrayList<>();
+                        if(task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String value = document.getData().get("value").toString();
+                                valueList.add(value);
+                            }
+
+                            ArrayList<BarEntry> entries = new ArrayList<>();
+                            for (int i = 0; i < 5; i++){
+                                entries.add(new BarEntry(i, Float.parseFloat(valueList.get(i))));
+                            }
+
+                            BarDataSet barDataSet = new BarDataSet(entries, "Daily deliveries");
+                            BarData data = new BarData(barDataSet);
+                            barchart.setData(data);
+                            barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                            barDataSet.setValueTextSize(12f);
+                            barchart.getDescription().setEnabled(false);
+                            barchart.getXAxis().setEnabled(false);
+                            barchart.getXAxis().setDrawGridLines(false);
+                            barchart.getAxisLeft().setDrawGridLines(false);
+                            barchart.getAxisRight().setEnabled(false);
+                            barchart.getAxisRight().setDrawGridLines(false);
+                            barchart.getLegend().setEnabled(false);
+                        }
+                    }
+                });
+
+
 
         //bottom nav
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
@@ -114,53 +167,6 @@ public class MainActivity extends AppCompatActivity {
         if(currentUser==null){
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         }
-    }
-
-
-    //send token to Firebase server
-    private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
-    }
-    /*get data value from database test
-            chartdata.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
-                        for (QueryDocumentSnapshot document : task.getResult()){
-                            String value = document.getData().get("value").toString();
-                            barArrayList = new ArrayList();
-                            barArrayList.add(new BarEntry(2f, Float.parseFloat(value)));
-                            Log.d(TAG, document.getId() + " => " + value);
-                        }
-                    }
-                }
-            });*/
-
-    //TODO: barchart setup
-    private void loadBarChartData(){
-        barArrayList = new ArrayList();
-        barArrayList.add(new BarEntry(2f, 10));
-        barArrayList.add(new BarEntry(3f, 20));
-        barArrayList.add(new BarEntry(4f, 30));
-        barArrayList.add(new BarEntry(5f, 40));
-        barArrayList.add(new BarEntry(6f, 20));
-        //barArrayList.add(new BarEntry(2f, Float.parseFloat(value)));
-    }
-
-    private void getDatafromFirestore(){
-        db.collection("ChartData")
-                .orderBy("id", Query.Direction.ASCENDING)
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    for (QueryDocumentSnapshot document : task.getResult()){
-                        String value = document.getData().get("value").toString();
-                        Log.d(TAG, document.getId() + " => " + value);
-                    }
-                }
-            }
-        });
     }
 
 
